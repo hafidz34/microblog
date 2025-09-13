@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Microblog</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background: #f4f6f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ===== NAVBAR ===== */
+    header {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header strong {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .nav {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav a {
+      color: #ecf0f1;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav a:hover {
+      color: #1abc9c;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: #fff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    input:focus, textarea:focus {
+      border-color: #1abc9c;
+      outline: none;
+      box-shadow: 0 0 4px rgba(26,188,156,0.4);
+    }
+
+    /* Tombol umum */
+    button {
+      background: #1abc9c;
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #16a085;
+    }
+
+    /* Tombol delete khusus */
+    .btn-delete {
+      background: #e74c3c;
+      margin-top: 8px;
+    }
+    .btn-delete:hover {
+      background: #c0392b;
+    }
+
+    .flash {
+      background: #ffeaa7;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #fdcb6e;
+    }
+
+    .post {
+      border: 1px solid #eee;
+      padding: 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+      background: #fafafa;
+    }
+    .post strong {
+      color: #2c3e50;
+    }
+    .post small {
+      color: #7f8c8d;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #2c3e50;
+      color: #bdc3c7;
+      text-align: center;
+      padding: 12px;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <strong><i class="fa-solid fa-feather"></i> Microblog</strong>
+  <div class="nav">
+    {% if current_user.is_authenticated %}
+      <span><i class="fa-solid fa-user"></i> {{ current_user.username }}</span>
+      <a href="{{ url_for('index') }}"><i class="fa-solid fa-house"></i> Home</a>
+      <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    {% else %}
+      <a href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+      <a href="{{ url_for('register') }}"><i class="fa-solid fa-user-plus"></i> Register</a>
+    {% endif %}
+  </div>
+</header>
+
+<div class="content">
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<footer>
+  <small>&copy; 2025 Microblog – Flask</small>
+</footer>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Timeline</h2>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+  <p>{{ form.body(rows=3, cols=70, placeholder="What's happening?") }}</p>
+  <p>{{ form.submit() }}</p>
+</form>
+
+{% for p in posts %}
+  <div class="post">
+    <div><strong>@{{ p.author.username }}</strong> • {{ p.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+    <div>{{ p.body }}</div>
+    {% if p.author.id == current_user.id %}
+      <form method="post" action="{{ url_for('delete_post', post_id=p.id) }}" style="margin-top:8px">
+        <button type="submit" class="btn-delete">
+            <i class="fa-solid fa-trash"></i> Delete
+        </button>
+      </form>
+    {% endif %}
+  </div>
+{% endfor %}
+{% endblock %}
