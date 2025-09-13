@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
 from . import db
 from .models import User, Post
-from .forms import LoginForm, RegisterForm, PostForm
+from .forms import LoginForm, RegisterForm, PostForm, EditPostForm
 from flask import current_app as app
 
 @app.route("/", methods=["GET", "POST"])
@@ -66,3 +66,22 @@ def delete_post(post_id):
     db.session.commit()
     flash("Deleted")
     return redirect(url_for("index"))
+
+@app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    if post.author != current_user:
+        flash("You can't edit this post.", "danger")
+        return redirect(url_for('index'))
+
+    form = EditPostForm(obj=post)
+
+    if form.validate_on_submit():
+        post.body = form.body.data
+        db.session.commit()
+        flash("Post has been updated!", "success")
+        return redirect(url_for('index'))
+
+    return render_template('edit_post.html', form=form, post=post)

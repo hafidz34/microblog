@@ -13,5 +13,9 @@ class RegisterForm(FlaskForm):
     submit = SubmitField("Create Account")
 
 class PostForm(FlaskForm):
-    body = TextAreaField("What’s happening?", validators=[DataRequired(), Length(max=500)])
+    body = TextAreaField("What's happening?", validators=[DataRequired(), Length(max=280)])
     submit = SubmitField("Post")
+
+class EditPostForm(FlaskForm):
+    body = TextAreaField("Edit content", validators=[DataRequired(), Length(max=280)])
+    submit = SubmitField("Update")

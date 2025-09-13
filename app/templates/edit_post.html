@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Edit Post{% endblock %}
+{% block content %}
+  <h2>Edit Post</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.body.label }}<br>
+    {{ form.body(rows=3, cols=60) }}<br><br>
+    {{ form.submit(class_="btn-primary") }}
+    <a href="{{ url_for('index') }}">Cancel</a>
+  </form>
+{% endblock %}

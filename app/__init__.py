@@ -15,8 +15,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
 
-    # import models & routes SETELAH init extensions,
-    # dan lakukan dalam app_context untuk menghindari circular import
+    # import models & routes setelah init extensions
     with app.app_context():
         from . import models, routes  # noqa: F401
         db.create_all()
