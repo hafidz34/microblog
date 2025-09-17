@@ -1,19 +1,23 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
 
-# Virtual environment
+# Virtual env & tools
 .venv/
-env/
-venv/
-
-# Environment files
 .env
+.env.*
+.coverage
+.pytest_cache/
 
-# VSCode
+# OS/editor
+.DS_Store
 .vscode/
+.idea/
 
-# Database
+# Instance/data & logs
+instance/
 *.sqlite3
+app.db
+*.log
