@@ -1,22 +1,36 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from . import db
 from .models import User, Post
-from .forms import LoginForm, RegisterForm, PostForm, EditPostForm
+from .forms import LoginForm, RegisterForm, PostForm, EditPostForm, DeleteForm
 from flask import current_app as app
+from urllib.parse import urlparse, urljoin
+
+def is_safe_url(target: str) -> bool:
+    ref = urlparse(request.host_url)
+    test = urlparse(urljoin(request.host_url, target))
+    return test.scheme in ("http", "https") and ref.netloc == test.netloc
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
     form = PostForm()
+    delete_form = DeleteForm()
+
     if form.validate_on_submit():
         p = Post(body=form.body.data, author=current_user)
         db.session.add(p)
         db.session.commit()
         flash("Posted!")
         return redirect(url_for("index"))
-    posts = Post.query.order_by(Post.created_at.desc()).all()
-    return render_template("index.html", form=form, posts=posts)
+
+    page = request.args.get("page", 1, type=int)
+    pagination = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=10)
+    return render_template("index.html",
+                           form=form,
+                           delete_form=delete_form,
+                           posts=pagination.items,
+                           pagination=pagination)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -27,7 +41,9 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
-            next_page = request.args.get("next") or url_for("index")
+            next_page = request.args.get("next")
+            if not next_page or not is_safe_url(next_page):
+                next_page = url_for("index")
             return redirect(next_page)
         flash("Invalid username or password")
     return render_template("login.html", form=form)
@@ -58,6 +74,10 @@ def logout():
 @app.route("/delete/<int:post_id>", methods=["POST"])
 @login_required
 def delete_post(post_id):
+    form = DeleteForm()
+    if not form.validate_on_submit():  # pastikan token CSRF valid
+        abort(400)
+
     p = Post.query.get_or_404(post_id)
     if p.author != current_user:
         flash("You can only delete your own posts")
