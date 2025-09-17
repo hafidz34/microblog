@@ -19,3 +19,7 @@ class PostForm(FlaskForm):
 class EditPostForm(FlaskForm):
     body = TextAreaField("Edit content", validators=[DataRequired(), Length(max=280)])
     submit = SubmitField("Update")
+
+# Baru: untuk proteksi CSRF pada aksi delete
+class DeleteForm(FlaskForm):
+    submit = SubmitField("Delete")
